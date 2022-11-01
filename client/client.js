@@ -106,7 +106,7 @@ const init = () => {
 
       const name = domoForm.querySelector('#domoName').value;
       const age = domoForm.querySelector('#domoAge').value;
-      const csrf = domoForm.querySelector('#_csrf').value;
+      const _csrf = domoForm.querySelector('#_csrf').value;
 
       if(!name || !age) {
         handleError('All fields are required!');
