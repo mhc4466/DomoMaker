@@ -19,6 +19,23 @@ const handleDomo = (e) => {
     return false;
 };
 
+const deleteDomo = (e) => {
+    e.preventDefault();
+    helper.hideError();
+
+    const _id = e.target.querySelector('#domoId').value;
+    const _csrf = e.target.querySelector('#_csrf').value;
+
+    if (!_id) {
+        helper.handleError('Could not identify Domo');
+        return false;
+    }
+
+    helper.sendPost(e.target.action, {_id, _csrf}, loadDomosFromServer);
+    
+    return false;
+}
+
 const DomoForm = (props) => {
     return (
         <form id="domoForm"
@@ -56,6 +73,17 @@ const DomoList = (props) => {
                 <h3 className="domoName"> Name: {domo.name} </h3>
                 <h3 className="domoAge"> Age: {domo.age} </h3>
                 <h3 className="domoWeight"> Weight: {domo.weight} </h3>
+                <form id="deleteForm" 
+                    onSubmit={deleteDomo} 
+                    name="deleteForm" 
+                    action="/delete" 
+                    method="POST" 
+                    className="deleteForm"
+                >
+                    <input id="domoId" type="hidden" name="domoId" value={domo._id} />
+                    <input id="_csrf" type="hidden" name="_csrf" value={props.csrf} />
+                    <input id="deleteSubmit" type="submit" value="Delete" />
+                </form>
             </div>
         );
     });
@@ -70,8 +98,12 @@ const DomoList = (props) => {
 const loadDomosFromServer = async () => {
     const response = await fetch('/getDomos');
     const data = await response.json();
+
+    const tokenResponse = await fetch('/getToken');
+    const tokenData = await tokenResponse.json();
+
     ReactDOM.render(
-        <DomoList domos={data.domos} />,
+        <DomoList csrf={tokenData.csrfToken} domos={data.domos} />,
         document.getElementById('domos')
     );
 };
@@ -86,7 +118,7 @@ const init = async () => {
     );
 
     ReactDOM.render(
-        <DomoList domos={[]} />,
+        <DomoList csrf={data.csrfToken} domos={[]} />,
         document.getElementById('domos')
     );
 

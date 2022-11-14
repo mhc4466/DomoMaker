@@ -30,6 +30,20 @@ const makeDomo = async (req, res) => {
   }
 };
 
+const deleteDomo = async (req, res) => {
+  if (!req.body._id) {
+    return res.status(400).json({ error: 'Client failed to send Domo ID' });
+  }
+
+  try {
+    Domo.deleteID(req.body._id);
+    return res.status(200).json({ message: 'Domo deleted' });
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({ error: 'Could not delete Domo' });
+  }
+};
+
 const getDomos = (req, res) => DomoModel.findByOwner(req.session.account._id, (err, docs) => {
   if (err) {
     console.log(err);
@@ -42,5 +56,6 @@ const getDomos = (req, res) => DomoModel.findByOwner(req.session.account._id, (e
 module.exports = {
   makerPage,
   makeDomo,
+  deleteDomo,
   getDomos,
 };
